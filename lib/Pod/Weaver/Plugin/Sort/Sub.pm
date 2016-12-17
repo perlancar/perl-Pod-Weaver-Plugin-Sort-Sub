@@ -38,18 +38,24 @@ sub weave_section {
                 my @pod;
 
                 push @pod, (
-                    "Via L<Sort::Sub> import:\n\n",
+                    "Generate sorter (accessed as variable) via L<Sort::Sub> import:\n\n",
 
                     " use Sort::Sub '\$$routine'; # use '\$$routine<i>' for case-insensitive sorting, '\$$routine<r>' for reverse sorting\n",
                     " my \@sorted = sort \$$routine ('item', ...);\n\n",
 
-                    "Use manually:\n\n",
+                    "Generate sorter (accessed as subroutine):\n\n",
 
-                    " use \$package;\n",
-                    " my $sorter = $package\::gen_sorter(\n",
+                    " use Sort::Sub '$routine<ir>';\n",
+                    " my \@sorted = sort {$routine} ('item', ...);\n\n",
+
+                    "Generate directly without Sort::Sub:\n\n",
+
+                    " use $package;\n",
+                    " my \$sorter = $package\::gen_sorter(\n",
                     "     ci => 1,      # default 0, set 1 to sort case-insensitively\n",
                     "     reverse => 1, # default 0, set 1 to sort in reverse order\n",
-                    " );\n\n",
+                    " );\n",
+                    " my \@sorted = sort \$sorter ('item', ...);\n\n",
 
                 );
                 $self->add_text_to_section(
@@ -63,7 +69,7 @@ sub weave_section {
                 my @pod;
 
                 push @pod, (
-                    "This module can generate sort subroutine. It is meant to be used via L<Sort::Sub>, although you can also use it manually via C<gen_sorter>.\n\n",
+                    "This module can generate sort subroutine. It is meant to be used via L<Sort::Sub>, although you can also use it directly via C<gen_sorter()>.\n\n",
                 );
                 $self->add_text_to_section(
                     $document, join("", @pod), "DESCRIPTION",
