@@ -57,6 +57,11 @@ sub weave_section {
                     " );\n",
                     " my \@sorted = sort \$sorter ('item', ...);\n\n",
 
+                    "Use in shell/CLI with L<sortsub> (from L<App::sortsub>):\n\n",
+
+                    " % some-cmd | sortsub $routine\n",
+                    " % some-cmd | sortsub $routine --ignore-case -r\n\n",
+
                 );
                 $self->add_text_to_section(
                     $document, join("", @pod), "SYNOPSIS",
