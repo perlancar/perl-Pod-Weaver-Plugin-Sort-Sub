@@ -1,3 +1,10 @@
+0.003   2019-12-15  Released-By: PERLANCAR; Urgency: low
+
+	- No functional changes.
+
+	- [doc] Mention DZP:Sort::Sub.
+
+
 0.002   2016-12-17  Released-By: PERLANCAR
 
 	- Generate Synopsis instruction on how to use the module via CLI
