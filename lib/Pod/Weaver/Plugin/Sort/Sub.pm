@@ -107,7 +107,14 @@ sub weave_section {
 
                     push @pod, $argspec->{summary}, ".\n\n" if defined $argspec->{summary};
 
-                    # XXX add description
+                    if ($argspec->{description}) {
+                        require Markdown::To::POD;
+                        my $pod = Markdown::To::POD::markdown_to_pod($argspec->{description});
+                        # make sure we add a couple of blank lines in the end
+                        $pod =~ s/\s+\z//s;
+                        $pod .= "\n\n\n";
+                        push @pod, $pod;
+                    }
                 }
 
                 $self->add_text_to_section(
