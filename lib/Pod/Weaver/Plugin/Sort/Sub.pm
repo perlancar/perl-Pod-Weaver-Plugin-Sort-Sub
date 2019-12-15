@@ -1,12 +1,17 @@
 package Pod::Weaver::Plugin::Sort::Sub;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
 use Moose;
 with 'Pod::Weaver::Role::AddTextToSection';
 with 'Pod::Weaver::Role::Section';
+
+use Data::Sah qw(normalize_schema);
+#use Data::Sah::Util::Type qw(get_type);
 
 sub weave_section {
     no strict 'refs';
@@ -27,11 +32,12 @@ sub weave_section {
         if ($package =~ /^Sort::Sub::([a-z_0-9][^:]*)/) {
             my $routine = $1;
 
-            #{
-            #    local @INC = ("lib", @INC);
-            #    require $package_pm;
-            #}
-            #my $examples = ${"$package\::Examples"};
+            my $meta = {};
+            {
+                local @INC = ("lib", @INC);
+                require $package_pm;
+                eval { $meta = $package->meta };
+            }
 
             # add POD section: SYNOPSIS
             {
@@ -82,6 +88,34 @@ sub weave_section {
                 );
             }
 
+            # create POD section: SORT ARGUMENTS
+            {
+                last unless $meta->{args};
+                my @pod;
+
+                push @pod, "C<*> marks required arguments.\n\n";
+
+                for my $argname (sort keys %{ $meta->{args} }) {
+                    my $argspec = $meta->{args}{$argname};
+
+                    die "Argument '$argname' does not have schema" unless defined $argspec->{schema};
+                    my $sch = normalize_schema($argspec->{schema});
+
+                    push @pod, "=head2 $argname", ($argspec->{req} ? "*":""), "\n\n";
+
+                    push @pod, "$sch->[0].\n\n";
+
+                    push @pod, $argspec->{summary}, ".\n\n" if defined $argspec->{summary};
+
+                    # XXX add description
+                }
+
+                $self->add_text_to_section(
+                    $document, join("", @pod), "SORT ARGUMENTS",
+                    {ignore => 1},
+                );
+            }
+
             # add modules to See Also
             {
                 my @pod;
@@ -125,6 +159,8 @@ files:
 =item * Add Synopsis section if not already exists
 
 =item * Add description about the module to Description section
+
+=item * Add Sort Arguments section containing list of sort arguments, from metadata
 
 =item * Mention some modules in See Also section
 
