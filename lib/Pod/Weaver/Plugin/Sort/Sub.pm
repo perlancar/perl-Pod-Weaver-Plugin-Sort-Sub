@@ -136,3 +136,5 @@ e.g. L<Sort::Sub>.
 =head1 SEE ALSO
 
 L<Sort::Sub>
+
+L<Dist::Zilla::Plugin::Sort::Sub>
